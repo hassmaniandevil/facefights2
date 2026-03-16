@@ -1,0 +1,190 @@
+/* ============================================
+   BASE STYLES — Variables, Reset, Body
+   ============================================ */
+
+:root {
+  /* Brand colors (from facefights) */
+  --ff-pink: #FF3366;
+  --ff-purple: #6C5CE7;
+  --ff-cyan: #00D9FF;
+  --ff-yellow: #FFE66D;
+  --ff-green: #00D26A;
+  --ff-orange: #FF9F43;
+  --ff-dark: #0A0A0F;
+  --ff-dark-bg: #12121A;
+  --ff-card-bg: #1A1A2E;
+  --ff-card-border: #2A2A4E;
+
+  /* UI */
+  --ff-text: #FFFFFF;
+  --ff-text-muted: #8888AA;
+  --ff-text-dim: #555577;
+
+  /* HP bar */
+  --hp-full: #00D26A;
+  --hp-mid: #FFE66D;
+  --hp-low: #FF3366;
+  --hp-bg: #1A1A2E;
+
+  /* Meter */
+  --meter-fill: #6C5CE7;
+  --meter-bg: #1A1A2E;
+  --meter-glow: rgba(108, 92, 231, 0.5);
+
+  /* Stamina */
+  --stamina-fill: #00D9FF;
+  --stamina-bg: #1A1A2E;
+
+  /* Rarity */
+  --rarity-common: #888899;
+  --rarity-uncommon: #00D26A;
+  --rarity-rare: #00D9FF;
+  --rarity-ultra: #6C5CE7;
+  --rarity-legendary: #FFE66D;
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+
+  /* Font */
+  --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-display: 'Inter', sans-serif;
+
+  /* Border radius */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.5);
+  --shadow-glow-pink: 0 0 20px rgba(255,51,102,0.3);
+  --shadow-glow-cyan: 0 0 20px rgba(0,217,255,0.3);
+  --shadow-glow-purple: 0 0 20px rgba(108,92,231,0.3);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: var(--font-main);
+  background: var(--ff-dark);
+  color: var(--ff-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+#__next {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+button {
+  font-family: var(--font-main);
+  cursor: pointer;
+  border: none;
+  outline: none;
+  background: none;
+  color: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+.screen {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--ff-dark);
+}
+
+.btn-primary {
+  padding: 14px 32px;
+  background: linear-gradient(135deg, var(--ff-pink), var(--ff-purple));
+  border-radius: var(--radius-full);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: white;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: var(--shadow-glow-pink);
+}
+
+.btn-primary:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 30px rgba(255,51,102,0.5);
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+}
+
+.btn-secondary {
+  padding: 12px 28px;
+  background: var(--ff-card-bg);
+  border: 1px solid var(--ff-card-border);
+  border-radius: var(--radius-full);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ff-text-muted);
+  transition: all 0.15s ease;
+}
+
+.btn-secondary:hover {
+  border-color: var(--ff-cyan);
+  color: var(--ff-cyan);
+}
+
+.glow-text {
+  text-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+}
+
+/* ============================================
+   RESPONSIVE BREAKPOINTS
+   ============================================ */
+
+@media (max-width: 600px) {
+  :root {
+    --space-md: 12px;
+    --space-lg: 16px;
+    --space-xl: 24px;
+  }
+}
+
+@media (max-width: 400px) {
+  :root {
+    --space-md: 8px;
+    --space-lg: 12px;
+    --space-xl: 16px;
+  }
+}

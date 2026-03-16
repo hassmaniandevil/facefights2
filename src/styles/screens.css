@@ -1,0 +1,275 @@
+/* ============================================
+   SCREENS — Home, Select, Results, Store
+   ============================================ */
+
+/* Home Screen */
+.home-screen {
+  background: linear-gradient(180deg, var(--ff-dark) 0%, #12121A 50%, #1a0a2e 100%);
+  gap: var(--space-xl);
+  text-align: center;
+  padding: var(--space-xl);
+}
+
+.home-title {
+  font-size: 64px;
+  font-weight: 900;
+  letter-spacing: -2px;
+  background: linear-gradient(135deg, var(--ff-pink), var(--ff-purple), var(--ff-cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.1;
+}
+
+.home-subtitle {
+  font-size: 18px;
+  color: var(--ff-text-muted);
+  font-weight: 400;
+  max-width: 400px;
+}
+
+.home-tagline {
+  font-size: 14px;
+  color: var(--ff-text-dim);
+  font-style: italic;
+}
+
+.home-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  width: 100%;
+  max-width: 320px;
+}
+
+.home-emoji {
+  font-size: 80px;
+  animation: emoji-float 3s ease-in-out infinite;
+}
+
+@keyframes emoji-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Fighter Select */
+.select-screen {
+  background: var(--ff-dark);
+  padding: var(--space-lg);
+  gap: var(--space-lg);
+}
+
+.select-title {
+  font-size: 24px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.fighter-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-md);
+  width: 100%;
+  max-width: 600px;
+  overflow-y: auto;
+  max-height: 60vh;
+  padding: var(--space-sm);
+}
+
+@media (max-width: 600px) {
+  .fighter-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.fighter-card {
+  aspect-ratio: 3/4;
+  background: var(--ff-card-bg);
+  border: 2px solid var(--ff-card-border);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: var(--space-sm);
+}
+
+.fighter-card:hover {
+  border-color: var(--ff-cyan);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-glow-cyan);
+}
+
+.fighter-card.selected {
+  border-color: var(--ff-pink);
+  box-shadow: var(--shadow-glow-pink);
+  transform: translateY(-4px);
+}
+
+.fighter-card .emoji {
+  font-size: 36px;
+}
+
+.fighter-card .name {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-align: center;
+}
+
+.fighter-card .title {
+  font-size: 9px;
+  color: var(--ff-text-muted);
+  text-align: center;
+}
+
+.fighter-stats {
+  display: flex;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.stat-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ff-text-dim);
+}
+
+.stat-dot.filled {
+  background: var(--ff-cyan);
+}
+
+/* Difficulty selector */
+.difficulty-selector {
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.difficulty-btn {
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--ff-card-bg);
+  border: 1px solid var(--ff-card-border);
+  transition: all 0.15s ease;
+}
+
+.difficulty-btn:hover {
+  border-color: var(--ff-purple);
+}
+
+.difficulty-btn.active {
+  background: var(--ff-purple);
+  border-color: var(--ff-purple);
+  color: white;
+}
+
+/* Results Screen */
+.results-screen {
+  background: linear-gradient(180deg, var(--ff-dark) 0%, #1a0a2e 100%);
+  gap: var(--space-xl);
+  text-align: center;
+  padding: var(--space-xl);
+}
+
+.results-title {
+  font-size: 48px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.results-title.win {
+  background: linear-gradient(135deg, var(--ff-yellow), var(--ff-orange));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.results-title.lose {
+  color: var(--ff-text-muted);
+}
+
+.results-score {
+  font-size: 72px;
+  font-weight: 900;
+  letter-spacing: 8px;
+}
+
+.results-buttons {
+  display: flex;
+  gap: var(--space-md);
+}
+
+/* Fight screen arena */
+.fight-screen {
+  background: var(--ff-dark);
+  position: relative;
+  overflow: hidden;
+}
+
+.arena {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.fight-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fighter-area {
+  position: absolute;
+  bottom: 20%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.fighter-area.p1 {
+  left: 15%;
+}
+
+.fighter-area.p2 {
+  right: 15%;
+}
+
+.fighter-emoji-display {
+  font-size: 80px;
+  transition: transform 0.1s ease;
+}
+
+/* Camera preview */
+.camera-preview {
+  position: absolute;
+  bottom: var(--space-md);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 160px;
+  height: 120px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 2px solid var(--ff-card-border);
+  z-index: 15;
+}
+
+.camera-preview video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+}
