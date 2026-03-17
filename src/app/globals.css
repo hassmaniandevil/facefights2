@@ -1,3 +1,6 @@
 @import "../styles/base.css";
+@import "../styles/fighters.css";
+@import "../styles/arenas.css";
+@import "../styles/animations.css";
 @import "../styles/hud.css";
 @import "../styles/screens.css";

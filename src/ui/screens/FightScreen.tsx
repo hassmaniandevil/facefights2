@@ -5,7 +5,9 @@ import { useGameStore } from '../../lib/store';
 import { GameLoop } from '../../engine/GameLoop';
 import { BotEngine } from '../../engine/BotEngine';
 import { getFighter } from '../../fighters';
-import { MatchPhase, BotDifficulty } from '../../core/types';
+import { getArenaForFight, getRandomOpponentId } from '../../core/arenas';
+import { MatchPhase, ExpressionType } from '../../core/types';
+import FighterChar from '../components/FighterChar';
 import { v4 as uuid } from 'uuid';
 
 export default function FightScreen() {
@@ -18,6 +20,7 @@ export default function FightScreen() {
   const gameLoopRef = useRef<GameLoop | null>(null);
   const botEngineRef = useRef<BotEngine | null>(null);
   const botIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const videoContainerRef = useRef<HTMLDivElement>(null);
 
   const [phase, setPhase] = useState<MatchPhase>(MatchPhase.LOADING);
   const [countdown, setCountdown] = useState(3);
@@ -31,13 +34,19 @@ export default function FightScreen() {
   const [p1RoundsWon, setP1RoundsWon] = useState(0);
   const [p2RoundsWon, setP2RoundsWon] = useState(0);
   const [hitFlash, setHitFlash] = useState(false);
+  const [screenShake, setScreenShake] = useState(false);
   const [desperationMode, setDesperationMode] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [cameraFailed, setCameraFailed] = useState(false);
+  const [loadingStatus, setLoadingStatus] = useState('Initializing...');
+  const [p1State, setP1State] = useState('');
+  const [p2State, setP2State] = useState('');
 
   const fighterId = selectedFighterId || 'koji';
   const fighter = getFighter(fighterId);
-  const opponentId = matchMode === 'cpu' ? 'granite' : 'koji'; // Default CPU opponent
+  const [opponentId] = useState(() => getRandomOpponentId(fighterId));
   const opponent = getFighter(opponentId);
+  const [arena] = useState(() => getArenaForFight(fighterId));
 
   const initMatch = useCallback(async () => {
     try {
@@ -61,20 +70,26 @@ export default function FightScreen() {
           case 'state:update':
             if (data) {
               setRoundTime(Math.ceil(data.roundTime));
-              setP1Hp(data.player1.combat.hp);
-              setP2Hp(data.player2.combat.hp);
-              setP1Meter(data.player1.combat.meter);
-              setP2Meter(data.player2.combat.meter);
-              setP1Stamina(data.player1.combat.stamina);
+              setP1Hp(Math.max(0, Math.round(data.player1.combat.hp)));
+              setP2Hp(Math.max(0, Math.round(data.player2.combat.hp)));
+              setP1Meter(Math.round(data.player1.combat.meter));
+              setP2Meter(Math.round(data.player2.combat.meter));
+              setP1Stamina(Math.round(data.player1.combat.stamina));
               setP1RoundsWon(data.player1.roundsWon);
               setP2RoundsWon(data.player2.roundsWon);
               setDesperationMode(data.player1.combat.hp / data.player1.combat.maxHp <= 0.2);
+
+              // Track animation states
+              setP1State(data.player1.move.phase !== 'idle' ? data.player1.move.phase : '');
+              setP2State(data.player2.move.phase !== 'idle' ? data.player2.move.phase : '');
             }
             break;
           case 'hit':
             if (data.damage > 0) {
               setHitFlash(true);
+              setScreenShake(true);
               setTimeout(() => setHitFlash(false), 80);
+              setTimeout(() => setScreenShake(false), 300);
             }
             break;
           case 'round:end':
@@ -88,8 +103,8 @@ export default function FightScreen() {
               player2RoundsWon: data.player2RoundsWon,
               player1FighterId: fighterId,
               player2FighterId: opponentId,
-              wasKO: data.roundResults?.some((r: any) =>
-                r.player1Hp === 0 || r.player2Hp === 0
+              wasKO: data.roundResults?.some((r: { player1Hp: number; player2Hp: number }) =>
+                r.player1Hp <= 0 || r.player2Hp <= 0
               ) || false,
             });
             setTimeout(() => setScreen('results'), 2000);
@@ -97,19 +112,53 @@ export default function FightScreen() {
         }
       });
 
-      await gl.initMatch({
-        matchId: uuid(),
-        player1: { id: 'p1', username: 'You', fighterId },
-        player2: { id: 'cpu', username: 'CPU', fighterId: opponentId },
-        isPlayer1Local: true,
-      });
+      // Try to init with face tracking first
+      let useFaceTracking = true;
+
+      // Check browser support
+      if (typeof navigator === 'undefined' || !navigator.mediaDevices?.getUserMedia) {
+        useFaceTracking = false;
+      }
+
+      if (useFaceTracking) {
+        setLoadingStatus('Starting camera...');
+        try {
+          await gl.initMatch({
+            matchId: uuid(),
+            player1: { id: 'p1', username: 'You', fighterId },
+            player2: { id: 'cpu', username: 'CPU', fighterId: opponentId },
+            isPlayer1Local: true,
+          });
+
+          // Show camera preview
+          const video = gl.getFaceLandmarker().getVideoElement();
+          if (video && videoContainerRef.current) {
+            videoContainerRef.current.appendChild(video);
+          }
+        } catch (initErr: any) {
+          console.warn('[FightScreen] Camera/FaceLandmarker failed:', initErr.message);
+          useFaceTracking = false;
+        }
+      }
+
+      // Fallback: init without face tracking (button controls)
+      if (!useFaceTracking) {
+        setCameraFailed(true);
+        setLoadingStatus('Using button controls...');
+        await gl.initMatch({
+          matchId: uuid(),
+          player1: { id: 'p1', username: 'You', fighterId },
+          player2: { id: 'cpu', username: 'CPU', fighterId: opponentId },
+          isPlayer1Local: true,
+          skipFaceTracking: true,
+        });
+      }
 
       // Set up bot for CPU mode
       if (matchMode === 'cpu') {
         const bot = new BotEngine(cpuDifficulty);
         botEngineRef.current = bot;
 
-        // Bot update loop — check every 100ms
         botIntervalRef.current = setInterval(() => {
           const state = gl.getStateSnapshot();
           if (!state || state.phase !== MatchPhase.FIGHTING) return;
@@ -121,6 +170,7 @@ export default function FightScreen() {
         }, 100);
       }
 
+      setLoadingStatus('Ready!');
       await gl.start();
     } catch (err: any) {
       console.error('[FightScreen] Init failed:', err);
@@ -143,11 +193,42 @@ export default function FightScreen() {
     };
   }, [initMatch]);
 
+  // Button fallback — send expression events manually
+  const sendExpression = useCallback((expression: ExpressionType) => {
+    const gl = gameLoopRef.current;
+    if (!gl) return;
+    const state = gl.getStateSnapshot();
+    if (!state || state.phase !== MatchPhase.FIGHTING) return;
+
+    gl.handleButtonInput('p1', [{
+      type: expression,
+      magnitude: 0.8,
+      timestamp: Date.now(),
+      confidence: 1.0,
+    }]);
+  }, []);
+
+  const handleAttack = useCallback(() => {
+    const attacks = [ExpressionType.SMILE, ExpressionType.MOUTH_OPEN, ExpressionType.BROWS_DOWN];
+    sendExpression(attacks[Math.floor(Math.random() * attacks.length)]);
+  }, [sendExpression]);
+
+  const handleBlock = useCallback(() => {
+    sendExpression(ExpressionType.LIPS_PRESS);
+  }, [sendExpression]);
+
+  const handleDodge = useCallback(() => {
+    const dodges = [ExpressionType.LEFT_WINK, ExpressionType.RIGHT_WINK];
+    sendExpression(dodges[Math.floor(Math.random() * dodges.length)]);
+  }, [sendExpression]);
+
   if (error) {
     return (
       <div className="screen" style={{ gap: '16px', textAlign: 'center', padding: '32px' }}>
-        <div style={{ fontSize: '48px' }}>😵</div>
-        <h2>Failed to Start</h2>
+        <div style={{ fontSize: '48px' }}>
+          <FighterChar fighterId={fighterId} style={{ transform: 'scale(2)', margin: '0 auto' }} />
+        </div>
+        <h2 style={{ marginTop: '24px' }}>Failed to Start</h2>
         <p style={{ color: 'var(--ff-text-muted)', maxWidth: '400px' }}>{error}</p>
         <p style={{ color: 'var(--ff-text-dim)', fontSize: '14px' }}>
           Make sure camera access is allowed and try again.
@@ -162,28 +243,25 @@ export default function FightScreen() {
   const hpClass = (hp: number) =>
     hp > 60 ? 'hp-high' : hp > 25 ? 'hp-mid' : 'hp-low';
 
+  const getP1AnimClass = () => {
+    if (p1Hp <= 0) return 'ko';
+    if (p1State === 'active') return 'attacking';
+    return '';
+  };
+
+  const getP2AnimClass = () => {
+    if (p2Hp <= 0) return 'ko';
+    if (p2State === 'active') return 'attacking';
+    return '';
+  };
+
   return (
-    <div className="screen fight-screen">
+    <div className={`screen fight-screen ${screenShake ? 'screen-shake' : ''}`}>
       {/* Arena background */}
-      <div
-        className="arena"
-        style={{
-          background: 'linear-gradient(180deg, #1a0a2e 0%, #0d0520 40%, #0A0A0F 100%)',
-        }}
-      />
+      <div className={`arena-bg ${arena.cssClass}`} />
 
       {/* Hit flash overlay */}
-      {hitFlash && (
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            background: 'rgba(255,255,255,0.3)',
-            zIndex: 30,
-            pointerEvents: 'none',
-          }}
-        />
-      )}
+      {hitFlash && <div className="hit-flash" />}
 
       {/* Desperation aura */}
       {desperationMode && <div className="desperation-aura" />}
@@ -192,7 +270,7 @@ export default function FightScreen() {
       <div className="fight-hud">
         <div className="player-info">
           <span className="player-name" style={{ color: fighter?.color }}>
-            {fighter?.emoji} {fighter?.name || 'P1'}
+            {fighter?.name || 'P1'}
           </span>
           <div className="hp-bar-container">
             <div
@@ -211,7 +289,7 @@ export default function FightScreen() {
             <div className="stamina-bar-fill" style={{ width: `${p1Stamina}%` }} />
           </div>
           <div style={{ fontSize: '12px', color: 'var(--ff-yellow)', marginTop: '4px' }}>
-            {'⭐'.repeat(p1RoundsWon)}
+            {'★'.repeat(p1RoundsWon)}
           </div>
         </div>
 
@@ -226,7 +304,7 @@ export default function FightScreen() {
 
         <div className="player-info" style={{ textAlign: 'right' }}>
           <span className="player-name" style={{ color: opponent?.color }}>
-            {opponent?.name || 'CPU'} {opponent?.emoji}
+            {opponent?.name || 'CPU'}
           </span>
           <div className="hp-bar-container p2">
             <div
@@ -239,34 +317,68 @@ export default function FightScreen() {
             <div className="meter-bar-fill" style={{ width: `${p2Meter}%` }} />
           </div>
           <div style={{ fontSize: '12px', color: 'var(--ff-yellow)', marginTop: '4px', textAlign: 'right' }}>
-            {'⭐'.repeat(p2RoundsWon)}
+            {'★'.repeat(p2RoundsWon)}
           </div>
         </div>
       </div>
 
-      {/* Fight content */}
+      {/* Fighter characters in arena */}
       <div className="fight-content">
-        {/* Player 1 fighter */}
-        <div className="fighter-area p1">
-          <div className="fighter-emoji-display">{fighter?.emoji || '🥊'}</div>
-          <div style={{ fontSize: '12px', color: 'var(--ff-text-muted)', marginTop: '4px' }}>
-            {fighter?.name}
-          </div>
+        <div className={`fighter-stage p1 ${getP1AnimClass()}`}>
+          <FighterChar fighterId={fighterId} />
+          <div className="fighter-tag">{fighter?.name}</div>
         </div>
 
-        {/* Player 2 fighter */}
-        <div className="fighter-area p2">
-          <div className="fighter-emoji-display">{opponent?.emoji || '🤖'}</div>
-          <div style={{ fontSize: '12px', color: 'var(--ff-text-muted)', marginTop: '4px' }}>
-            {opponent?.name}
-          </div>
+        <div className={`fighter-stage p2 ${getP2AnimClass()}`}>
+          <FighterChar fighterId={opponentId} />
+          <div className="fighter-tag">{opponent?.name}</div>
         </div>
       </div>
+
+      {/* Camera preview */}
+      {!cameraFailed && (
+        <div className="camera-preview" ref={videoContainerRef} />
+      )}
+
+      {/* Button fallback controls */}
+      {(cameraFailed || phase === MatchPhase.FIGHTING) && (
+        <div className="fallback-controls">
+          <button className="fallback-btn attack" onClick={handleAttack}>
+            <span className="btn-icon">👊</span>
+            ATK
+          </button>
+          <button className="fallback-btn block" onClick={handleBlock}>
+            <span className="btn-icon">🛡</span>
+            BLK
+          </button>
+          <button className="fallback-btn dodge" onClick={handleDodge}>
+            <span className="btn-icon">💨</span>
+            DGE
+          </button>
+        </div>
+      )}
+
+      {/* Loading status */}
+      {phase === MatchPhase.LOADING && (
+        <div className="round-indicator" style={{ fontSize: '24px' }}>
+          {loadingStatus}
+        </div>
+      )}
 
       {/* Phase overlays */}
       {phase === MatchPhase.INTRO && (
-        <div className="round-indicator">
-          {fighter?.emoji} VS {opponent?.emoji}
+        <div className="round-indicator" style={{ fontSize: '48px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <FighterChar fighterId={fighterId} style={{ transform: 'scale(2)' }} />
+              <span style={{ marginTop: '16px', fontSize: '16px' }}>{fighter?.name}</span>
+            </div>
+            <span>VS</span>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <FighterChar fighterId={opponentId} style={{ transform: 'scale(2) scaleX(-1)' }} />
+              <span style={{ marginTop: '16px', fontSize: '16px' }}>{opponent?.name}</span>
+            </div>
+          </div>
         </div>
       )}
 

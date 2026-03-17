@@ -2,6 +2,7 @@
 
 import { useGameStore } from '../../lib/store';
 import { getFighter } from '../../fighters';
+import FighterChar from '../components/FighterChar';
 
 export default function ResultsScreen() {
   const setScreen = useGameStore((s) => s.setScreen);
@@ -24,10 +25,6 @@ export default function ResultsScreen() {
 
   return (
     <div className="screen results-screen">
-      <div style={{ fontSize: '80px' }}>
-        {isWin ? '🏆' : '😵'}
-      </div>
-
       <h1 className={`results-title ${isWin ? 'win' : 'lose'}`}>
         {isWin ? 'VICTORY!' : lastMatchResult.winnerId === null ? 'DRAW' : 'DEFEAT'}
       </h1>
@@ -36,15 +33,23 @@ export default function ResultsScreen() {
         {lastMatchResult.player1RoundsWon} - {lastMatchResult.player2RoundsWon}
       </div>
 
-      <div style={{ display: 'flex', gap: '32px', alignItems: 'center' }}>
+      <div style={{ display: 'flex', gap: '48px', alignItems: 'center', margin: '16px 0' }}>
         <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '48px' }}>{player1Fighter?.emoji}</div>
-          <div style={{ fontSize: '14px', fontWeight: 700 }}>{player1Fighter?.name}</div>
+          <div style={{ transform: 'scale(2)', marginBottom: '16px' }}>
+            <FighterChar fighterId={lastMatchResult.player1FighterId} />
+          </div>
+          <div style={{ fontSize: '14px', fontWeight: 700, marginTop: '24px', color: player1Fighter?.color }}>
+            {player1Fighter?.name}
+          </div>
         </div>
         <div style={{ fontSize: '24px', color: 'var(--ff-text-muted)' }}>VS</div>
         <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '48px' }}>{player2Fighter?.emoji}</div>
-          <div style={{ fontSize: '14px', fontWeight: 700 }}>{player2Fighter?.name}</div>
+          <div style={{ transform: 'scale(2) scaleX(-1)', marginBottom: '16px' }}>
+            <FighterChar fighterId={lastMatchResult.player2FighterId} />
+          </div>
+          <div style={{ fontSize: '14px', fontWeight: 700, marginTop: '24px', color: player2Fighter?.color }}>
+            {player2Fighter?.name}
+          </div>
         </div>
       </div>
 

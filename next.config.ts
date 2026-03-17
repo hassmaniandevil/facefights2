@@ -1,7 +1,25 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // Turbopack handles WASM natively
+  turbopack: {
+    root: '.',
+  },
+
+  // Allow camera access
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(self), microphone=(self)',
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;

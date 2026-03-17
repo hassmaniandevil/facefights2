@@ -53,14 +53,23 @@ export class FaceLandmarker {
   private statusListeners: ((status: FaceStatus) => void)[] = [];
 
   async initialize(): Promise<void> {
+    // Check browser support
+    if (typeof navigator === 'undefined') {
+      throw new Error('Browser environment required for face tracking');
+    }
+
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      throw new Error('Camera not supported in this browser. Try Chrome, Safari, or Firefox on a device with a camera.');
+    }
+
     // Initialize camera
     await this.initCamera();
 
     // Initialize FaceLandmarker
     await this.initLandmarker();
 
-    // Initialize NSFW filter
-    await this.initNsfwFilter();
+    // Initialize NSFW filter (non-blocking — game works without it)
+    this.initNsfwFilter().catch(() => {});
 
     this.emitStatus({ type: 'ready', message: 'Face tracking ready' });
   }
@@ -84,9 +93,16 @@ export class FaceLandmarker {
       this.video.srcObject = this.stream;
       await this.video.play();
       this.emitStatus({ type: 'camera_ready', message: 'Camera initialized' });
-    } catch (error) {
-      this.emitStatus({ type: 'camera_error', message: 'Camera access denied' });
-      throw error;
+    } catch (error: any) {
+      const message = error?.name === 'NotAllowedError'
+        ? 'Camera access denied. Please allow camera access in your browser settings.'
+        : error?.name === 'NotFoundError'
+        ? 'No camera found. Please connect a camera and try again.'
+        : error?.name === 'NotReadableError'
+        ? 'Camera is in use by another app. Close other apps using the camera.'
+        : 'Camera access failed. Please check your camera permissions.';
+      this.emitStatus({ type: 'camera_error', message });
+      throw new Error(message);
     }
   }
 

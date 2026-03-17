@@ -1,6 +1,7 @@
 'use client';
 
 import { useGameStore } from '../../lib/store';
+import FighterChar from '../components/FighterChar';
 
 export default function HomeScreen() {
   const setScreen = useGameStore((s) => s.setScreen);
@@ -13,7 +14,22 @@ export default function HomeScreen() {
 
   return (
     <div className="screen home-screen">
-      <div className="home-emoji">👊</div>
+      {/* Showcase fighters */}
+      <div style={{
+        display: 'flex',
+        gap: '16px',
+        marginBottom: '8px',
+      }}>
+        <div style={{ transform: 'scale(1.5)', opacity: 0.6 }}>
+          <FighterChar fighterId="koji" />
+        </div>
+        <div style={{ transform: 'scale(1.8)' }}>
+          <FighterChar fighterId="venus" />
+        </div>
+        <div style={{ transform: 'scale(1.5)', opacity: 0.6 }}>
+          <FighterChar fighterId="granite" />
+        </div>
+      </div>
 
       <h1 className="home-title">FACE FIGHTS</h1>
 

@@ -1,0 +1,781 @@
+/* ============================================
+   CSS FIGHTER CHARACTERS — Pure CSS, no images
+   12 unique fighters from FaceFights
+   ============================================ */
+
+/* Base fighter character structure */
+.fighter-char {
+  width: 52px;
+  height: 60px;
+  position: relative;
+}
+
+/* Base head shape */
+.fighter-char .head {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+/* Base body */
+.fighter-char .body {
+  width: 32px;
+  height: 24px;
+  border-radius: 8px 8px 12px 12px;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+/* Eyes base */
+.fighter-char .eyes {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+}
+
+.fighter-char .eye {
+  width: 8px;
+  height: 8px;
+  background: white;
+  border-radius: 50%;
+  position: relative;
+}
+
+.fighter-char .eye::after {
+  content: '';
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: #1a1a2e;
+  border-radius: 50%;
+  top: 2px;
+  left: 2px;
+}
+
+/* === KOJI - The Fundamentalist === */
+.fighter-koji .head {
+  background: linear-gradient(145deg, #FFE4C4, #DEB887);
+}
+
+.fighter-koji .body {
+  background: linear-gradient(145deg, #FF5733, #C70039);
+}
+
+/* Headband */
+.fighter-koji .head::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: -2px;
+  right: -2px;
+  height: 6px;
+  background: linear-gradient(90deg, #C70039, #FF5733);
+  border-radius: 2px;
+}
+
+/* Headband tail */
+.fighter-koji .head::after {
+  content: '';
+  position: absolute;
+  top: 6px;
+  right: -8px;
+  width: 12px;
+  height: 4px;
+  background: #C70039;
+  border-radius: 2px;
+  transform: rotate(25deg);
+}
+
+.fighter-koji .detail {
+  position: absolute;
+  top: 5px;
+  right: -6px;
+  width: 8px;
+  height: 3px;
+  background: #FF5733;
+  border-radius: 2px;
+  transform: rotate(35deg);
+}
+
+/* === VENUS - The Provocateur === */
+.fighter-venus .head {
+  background: linear-gradient(145deg, #FFE4C4, #F5DEB3);
+}
+
+.fighter-venus .body {
+  background: linear-gradient(145deg, #FF69B4, #DA70D6);
+}
+
+/* Flowing hair */
+.fighter-venus .head::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 28px;
+  background: linear-gradient(145deg, #DA70D6, #FF69B4);
+  border-radius: 50% 50% 30% 30%;
+  z-index: -1;
+}
+
+/* Hair side */
+.fighter-venus .head::after {
+  content: '';
+  position: absolute;
+  top: 10px;
+  left: -6px;
+  width: 10px;
+  height: 20px;
+  background: linear-gradient(180deg, #DA70D6, #FF69B4);
+  border-radius: 50%;
+  z-index: -1;
+}
+
+.fighter-venus .detail {
+  position: absolute;
+  top: 10px;
+  right: -6px;
+  width: 10px;
+  height: 20px;
+  background: linear-gradient(180deg, #FF69B4, #DA70D6);
+  border-radius: 50%;
+  z-index: -1;
+}
+
+/* Lipstick */
+.fighter-venus .mouth {
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 4px;
+  background: #FF1493;
+  border-radius: 0 0 4px 4px;
+}
+
+/* === GRANITE - The Immovable === */
+.fighter-granite .head {
+  background: linear-gradient(145deg, #778899, #4A5568);
+  border-radius: 40% 40% 50% 50%;
+}
+
+.fighter-granite .body {
+  background: linear-gradient(145deg, #2F4F4F, #1a1a2e);
+  width: 38px;
+  height: 26px;
+}
+
+/* Square jaw */
+.fighter-granite .head::before {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 28px;
+  height: 10px;
+  background: linear-gradient(145deg, #708090, #4A5568);
+  border-radius: 0 0 6px 6px;
+}
+
+/* Scar */
+.fighter-granite .detail {
+  position: absolute;
+  top: 14px;
+  left: 6px;
+  width: 8px;
+  height: 2px;
+  background: #2F4F4F;
+  border-radius: 1px;
+  transform: rotate(-20deg);
+}
+
+.fighter-granite .eye {
+  width: 6px;
+  height: 4px;
+  border-radius: 2px;
+}
+
+.fighter-granite .eye::after {
+  width: 3px;
+  height: 3px;
+  top: 1px;
+  left: 2px;
+}
+
+/* === FLICKA - The Chaos Gremlin === */
+.fighter-flicka .head {
+  background: linear-gradient(145deg, #E0FFFF, #B0E0E6);
+  width: 32px;
+  height: 32px;
+}
+
+.fighter-flicka .body {
+  background: linear-gradient(145deg, #00CED1, #00BFFF);
+  width: 28px;
+}
+
+/* Spiky electric hair */
+.fighter-flicka .head::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 14px solid #00BFFF;
+}
+
+.fighter-flicka .head::after {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 2px;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 10px solid #00CED1;
+  transform: rotate(-30deg);
+}
+
+.fighter-flicka .detail {
+  position: absolute;
+  top: -6px;
+  right: 2px;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 10px solid #00CED1;
+  transform: rotate(30deg);
+}
+
+/* Big excited eyes */
+.fighter-flicka .eye {
+  width: 10px;
+  height: 10px;
+}
+
+.fighter-flicka .eye::after {
+  width: 5px;
+  height: 5px;
+  top: 3px;
+  left: 3px;
+}
+
+/* === HEXBYTE - The Synthetic === */
+.fighter-hexbyte .head {
+  background: linear-gradient(145deg, #2D2D2D, #1a1a1a);
+  border-radius: 8px;
+}
+
+.fighter-hexbyte .body {
+  background: linear-gradient(145deg, #1a1a1a, #0d0d0d);
+  border-radius: 4px 4px 8px 8px;
+}
+
+/* Visor */
+.fighter-hexbyte .head::before {
+  content: '';
+  position: absolute;
+  top: 10px;
+  left: 4px;
+  right: 4px;
+  height: 8px;
+  background: linear-gradient(90deg, #32CD32, #00FF00, #32CD32);
+  border-radius: 2px;
+  box-shadow: 0 0 10px #00FF00;
+}
+
+/* Circuit lines */
+.fighter-hexbyte .detail {
+  position: absolute;
+  top: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 12px;
+  height: 2px;
+  background: #32CD32;
+  box-shadow: 0 0 5px #32CD32;
+}
+
+.fighter-hexbyte .eyes {
+  display: none;
+}
+
+/* Antenna */
+.fighter-hexbyte .head::after {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 8px;
+  background: #32CD32;
+  border-radius: 2px;
+  box-shadow: 0 0 8px #00FF00;
+}
+
+/* === COCO - The Wildcard === */
+.fighter-coco .head {
+  background: linear-gradient(145deg, #8B4513, #654321);
+}
+
+.fighter-coco .body {
+  background: linear-gradient(145deg, #FFA500, #FF6347);
+}
+
+/* Afro hair */
+.fighter-coco .head::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 44px;
+  height: 30px;
+  background: radial-gradient(circle, #1a1a1a 0%, #0d0d0d 100%);
+  border-radius: 50%;
+  z-index: -1;
+}
+
+/* Star accessory */
+.fighter-coco .detail {
+  position: absolute;
+  top: -2px;
+  left: 2px;
+  font-size: 10px;
+  color: #FFD700;
+  text-shadow: 0 0 5px #FFD700;
+}
+
+.fighter-coco .detail::before {
+  content: '★';
+}
+
+/* Big smile */
+.fighter-coco .mouth {
+  position: absolute;
+  top: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 14px;
+  height: 6px;
+  background: white;
+  border-radius: 0 0 10px 10px;
+  border: 2px solid #8B4513;
+  border-top: none;
+}
+
+/* === BARON - The Aristocrat === */
+.fighter-baron .head {
+  background: linear-gradient(145deg, #FFE4C4, #F5DEB3);
+}
+
+.fighter-baron .body {
+  background: linear-gradient(145deg, #DAA520, #B8860B);
+}
+
+/* Top hat */
+.fighter-baron .head::before {
+  content: '';
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 28px;
+  height: 16px;
+  background: linear-gradient(145deg, #1a1a1a, #333);
+  border-radius: 4px 4px 0 0;
+}
+
+.fighter-baron .head::after {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 36px;
+  height: 6px;
+  background: linear-gradient(145deg, #333, #1a1a1a);
+  border-radius: 2px;
+}
+
+/* Monocle */
+.fighter-baron .detail {
+  position: absolute;
+  top: 10px;
+  right: 4px;
+  width: 10px;
+  height: 10px;
+  border: 2px solid #DAA520;
+  border-radius: 50%;
+  box-shadow: 0 0 5px rgba(218, 165, 32, 0.5);
+}
+
+/* Mustache */
+.fighter-baron .mouth {
+  position: absolute;
+  top: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 16px;
+  height: 6px;
+  background: #4a3728;
+  border-radius: 0 0 8px 8px;
+}
+
+.fighter-baron .mouth::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -4px;
+  width: 8px;
+  height: 4px;
+  background: #4a3728;
+  border-radius: 4px 0 4px 4px;
+  transform: rotate(-15deg);
+}
+
+.fighter-baron .mouth::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  right: -4px;
+  width: 8px;
+  height: 4px;
+  background: #4a3728;
+  border-radius: 0 4px 4px 4px;
+  transform: rotate(15deg);
+}
+
+/* === NANA - The Grandmother === */
+.fighter-nana .head {
+  background: linear-gradient(145deg, #FFE4C4, #DEB887);
+}
+
+.fighter-nana .body {
+  background: linear-gradient(145deg, #FFB6C1, #DDA0DD);
+}
+
+/* Bun hairstyle */
+.fighter-nana .head::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 16px;
+  background: linear-gradient(145deg, #C0C0C0, #A9A9A9);
+  border-radius: 50%;
+}
+
+/* Glasses */
+.fighter-nana .detail {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 28px;
+  height: 10px;
+  display: flex;
+  gap: 4px;
+}
+
+.fighter-nana .detail::before,
+.fighter-nana .detail::after {
+  content: '';
+  width: 10px;
+  height: 10px;
+  border: 2px solid #B8860B;
+  border-radius: 50%;
+}
+
+/* Kind smile */
+.fighter-nana .mouth {
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 5px;
+  border: 2px solid #C44;
+  border-top: none;
+  border-radius: 0 0 10px 10px;
+  background: transparent;
+}
+
+.fighter-nana .eyes {
+  top: 14px;
+}
+
+.fighter-nana .eye {
+  width: 6px;
+  height: 6px;
+}
+
+.fighter-nana .eye::after {
+  width: 3px;
+  height: 3px;
+}
+
+/* === DAZE - The Sleepwalker === */
+.fighter-daze .head {
+  background: linear-gradient(145deg, #E6E6FA, #D8BFD8);
+}
+
+.fighter-daze .body {
+  background: linear-gradient(145deg, #9370DB, #4B0082);
+}
+
+/* Messy sleepy hair */
+.fighter-daze .head::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 38px;
+  height: 20px;
+  background: linear-gradient(145deg, #4B0082, #9370DB);
+  border-radius: 50% 50% 30% 30%;
+  z-index: -1;
+}
+
+/* Sleep mask pushed up */
+.fighter-daze .detail {
+  position: absolute;
+  top: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 8px;
+  background: linear-gradient(90deg, #4B0082, #9370DB, #4B0082);
+  border-radius: 4px;
+}
+
+/* Sleepy eyes (half closed) */
+.fighter-daze .eye {
+  height: 4px;
+  border-radius: 4px 4px 0 0;
+}
+
+.fighter-daze .eye::after {
+  display: none;
+}
+
+/* Z's floating */
+.fighter-daze .head::after {
+  content: 'z';
+  position: absolute;
+  top: -4px;
+  right: -8px;
+  font-size: 10px;
+  font-weight: bold;
+  color: #9370DB;
+  opacity: 0.8;
+}
+
+/* === MIRROR - The Copycat === */
+.fighter-mirror .head {
+  background: linear-gradient(145deg, #E8E8E8, #C0C0C0);
+  box-shadow: 0 4px 12px rgba(192, 192, 192, 0.5);
+}
+
+.fighter-mirror .body {
+  background: linear-gradient(145deg, #C0C0C0, #808080);
+}
+
+/* Reflective surface effect */
+.fighter-mirror .head::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 10px;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+}
+
+/* Question mark face */
+.fighter-mirror .detail {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 16px;
+  font-weight: bold;
+  color: #666;
+}
+
+.fighter-mirror .detail::before {
+  content: '?';
+}
+
+.fighter-mirror .eyes {
+  display: none;
+}
+
+/* Shiny outline */
+.fighter-mirror .head::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+}
+
+/* === RELIC - The Old Master === */
+.fighter-relic .head {
+  background: linear-gradient(145deg, #DEB887, #D2B48C);
+}
+
+.fighter-relic .body {
+  background: linear-gradient(145deg, #8B4513, #654321);
+}
+
+/* Long beard */
+.fighter-relic .head::after {
+  content: '';
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 16px;
+  background: linear-gradient(180deg, #C0C0C0, #808080);
+  border-radius: 0 0 10px 10px;
+  z-index: 2;
+}
+
+/* Wise eyebrows */
+.fighter-relic .detail {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.fighter-relic .detail::before,
+.fighter-relic .detail::after {
+  content: '';
+  width: 10px;
+  height: 4px;
+  background: #808080;
+  border-radius: 2px;
+}
+
+/* Ancient symbol on forehead */
+.fighter-relic .head::before {
+  content: '☯';
+  position: absolute;
+  top: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 8px;
+  color: #B8860B;
+}
+
+.fighter-relic .eyes {
+  top: 14px;
+}
+
+.fighter-relic .eye {
+  width: 5px;
+  height: 3px;
+  border-radius: 2px;
+}
+
+.fighter-relic .eye::after {
+  display: none;
+}
+
+/* === TWINS - Kiki & Koko === */
+.fighter-twins .head {
+  background: linear-gradient(90deg, #FFE4C4 50%, #F5DEB3 50%);
+  position: relative;
+}
+
+.fighter-twins .body {
+  background: linear-gradient(90deg, #FFFFFF 50%, #1a1a1a 50%);
+}
+
+/* Split hair - black and white */
+.fighter-twins .head::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 0;
+  width: 18px;
+  height: 20px;
+  background: #1a1a1a;
+  border-radius: 50% 0 0 50%;
+  z-index: -1;
+}
+
+.fighter-twins .head::after {
+  content: '';
+  position: absolute;
+  top: -6px;
+  right: 0;
+  width: 18px;
+  height: 20px;
+  background: #FFFFFF;
+  border-radius: 0 50% 50% 0;
+  z-index: -1;
+  border: 1px solid #ddd;
+}
+
+/* Different colored eyes */
+.fighter-twins .eye:first-child {
+  background: #1a1a1a;
+}
+
+.fighter-twins .eye:first-child::after {
+  background: white;
+}
+
+.fighter-twins .eye:last-child {
+  background: white;
+  border: 1px solid #ddd;
+}
+
+.fighter-twins .eye:last-child::after {
+  background: #1a1a1a;
+}
+
+/* Yin yang vibe */
+.fighter-twins .detail {
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 4px;
+  background: linear-gradient(90deg, #1a1a1a 50%, #ccc 50%);
+  border-radius: 4px;
+}

@@ -57,6 +57,7 @@ export class GameLoop {
     player1: { id: string; username: string; fighterId: string };
     player2: { id: string; username: string; fighterId: string };
     isPlayer1Local: boolean;
+    skipFaceTracking?: boolean;
   }): Promise<void> {
     const fighter1 = getFighter(config.player1.fighterId);
     const fighter2 = getFighter(config.player2.fighterId);
@@ -92,32 +93,34 @@ export class GameLoop {
       isPaused: false,
     };
 
-    // Initialize face tracking
-    await this.faceLandmarker.initialize();
+    // Initialize face tracking (unless skipped for button fallback mode)
+    if (!config.skipFaceTracking) {
+      await this.faceLandmarker.initialize();
 
-    // Set up blendshape → expression pipeline
-    this.faceLandmarker.onFrame((frame: BlendshapeFrame) => {
-      // Step 1: Map blendshapes to expression values
-      const mappedValues = mapBlendshapes(frame.coefficients);
+      // Set up blendshape → expression pipeline
+      this.faceLandmarker.onFrame((frame: BlendshapeFrame) => {
+        // Step 1: Map blendshapes to expression values
+        const mappedValues = mapBlendshapes(frame.coefficients);
 
-      // Step 2: Pass through ExpressionGate (EMA + hold-time gating)
-      const gatedExpressions = this.expressionGate.process(mappedValues);
+        // Step 2: Pass through ExpressionGate (EMA + hold-time gating)
+        const gatedExpressions = this.expressionGate.process(mappedValues);
 
-      // Step 3: For gated expressions, create events and feed to ExpressionEngine
-      const smoothedValues = this.expressionGate.getSmoothedValues();
-      this.expressionEngine.updateExpressions(smoothedValues, frame.confidence);
+        // Step 3: For gated expressions, create events and feed to ExpressionEngine
+        const smoothedValues = this.expressionGate.getSmoothedValues();
+        this.expressionEngine.updateExpressions(smoothedValues, frame.confidence);
 
-      // Step 4: Emit gated expression events for immediate processing
-      for (const exprType of gatedExpressions) {
-        const event: ExpressionEvent = {
-          type: exprType,
-          magnitude: smoothedValues[exprType] || 0,
-          timestamp: Date.now(),
-          confidence: frame.confidence,
-        };
-        this.processGatedExpression(event);
-      }
-    });
+        // Step 4: Emit gated expression events for immediate processing
+        for (const exprType of gatedExpressions) {
+          const event: ExpressionEvent = {
+            type: exprType,
+            magnitude: smoothedValues[exprType] || 0,
+            timestamp: Date.now(),
+            confidence: frame.confidence,
+          };
+          this.processGatedExpression(event);
+        }
+      });
+    }
 
     this.emit('match:initialized', { matchId: config.matchId });
   }
@@ -474,6 +477,22 @@ export class GameLoop {
       if (moveType) {
         this.combatEngine.startMove(player, moveType);
       }
+    }
+  }
+
+  /**
+   * Handle button input for local player (fallback when camera unavailable)
+   */
+  handleButtonInput(playerId: string, events: ExpressionEvent[]): void {
+    if (!this.matchState || this.matchState.phase !== MatchPhase.FIGHTING) return;
+
+    const player =
+      this.matchState.player1.id === playerId
+        ? this.matchState.player1
+        : this.matchState.player2;
+
+    for (const event of events) {
+      this.processLocalInput(player, event);
     }
   }
 
